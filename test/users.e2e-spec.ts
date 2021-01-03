@@ -25,13 +25,11 @@ describe('UsersModule (e2e)', () => {
   let usersRepository: Repository<User>;
   let verificationRepository: Repository<Verification>;
   let jwtToken: string;
-  const graphqlRequest = (query: string) =>
-    request(app.getHttpServer()).post(GRAPHQL_ENDPOINT).send({ query });
-  const graphqlAuthRequest = (query: string) =>
-    request(app.getHttpServer())
-      .post(GRAPHQL_ENDPOINT)
-      .set('X-JWT', jwtToken)
-      .send({ query });
+
+  const baseText = () => request(app.getHttpServer()).post(GRAPHQL_ENDPOINT);
+  const publicTest = (query: string) => baseText().send({ query });
+  const privateTest = (query: string) =>
+    baseText().set('X-JWT', jwtToken).send({ query });
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -53,7 +51,7 @@ describe('UsersModule (e2e)', () => {
 
   describe('createAccount', () => {
     it('should create account', () => {
-      return graphqlRequest(`mutation {
+      return publicTest(`mutation {
           createAccount(input: {
             email:"${testUser.email}"
             password:"${testUser.password}"
@@ -76,7 +74,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     it('should fail if account already exists', () => {
-      return graphqlRequest(`mutation {
+      return publicTest(`mutation {
         createAccount(input: {
           email:"${testUser.email}"
           password:"${testUser.password}"
@@ -103,7 +101,7 @@ describe('UsersModule (e2e)', () => {
 
   describe('login', () => {
     it('should login with correct credentials', () => {
-      return graphqlRequest(`mutation {
+      return publicTest(`mutation {
           login(input: {
             email:"${testUser.email}"
             password:"${testUser.password}"
@@ -128,7 +126,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     it('should not be albe to login with wrong credentials', () => {
-      return graphqlRequest(`mutation {
+      return publicTest(`mutation {
         login(input: {
           email:"${testUser.email}"
           password:"123123"
@@ -160,7 +158,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     it("should see a user's profile", () => {
-      return graphqlAuthRequest(`{
+      return privateTest(`{
         userProfile(userId:${userId}) {
           ok
           error
@@ -180,7 +178,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     it('should not find a profile', () => {
-      return graphqlAuthRequest(`{
+      return privateTest(`{
         userProfile(userId:999) {
           ok
           error
@@ -201,7 +199,7 @@ describe('UsersModule (e2e)', () => {
 
   describe('me', () => {
     it('should find my profile', () => {
-      return graphqlAuthRequest(`{
+      return privateTest(`{
         me {
           email
         }
@@ -214,7 +212,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     it('should not allow logged out user', () => {
-      return graphqlRequest(`{
+      return publicTest(`{
         me {
           email
         }
@@ -231,7 +229,7 @@ describe('UsersModule (e2e)', () => {
   describe('editProfile', () => {
     const NEW_EMAIL = 'test@new.com';
     it('should change email', () => {
-      return graphqlAuthRequest(`mutation {
+      return privateTest(`mutation {
         editProfile(input: {
           email: "${NEW_EMAIL}"
         }) {
@@ -248,7 +246,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     it('should have new email', () => {
-      return graphqlAuthRequest(`{
+      return privateTest(`{
         me {
           email
         }
@@ -269,7 +267,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     it('should verify email', () => {
-      return graphqlRequest(`mutation {
+      return publicTest(`mutation {
         verifyEmail(input: {
           code: "${verificationCode}"
         }) {
@@ -286,7 +284,7 @@ describe('UsersModule (e2e)', () => {
     });
 
     it('should fail on wrong verification code not found', () => {
-      return graphqlRequest(`mutation {
+      return publicTest(`mutation {
         verifyEmail(input: {
           code: "123"
         }) {
