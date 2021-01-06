@@ -19,3 +19,26 @@ The Backend of Nuber Eats Clone
 - See Profile
 - Edit Profile
 - Verify Email
+
+## Restaurant Model
+
+- name
+- category
+- address
+- coverImage
+
+## Restaurant CURD
+
+- Create Restaurant
+- Edit Restaurant
+- Delete Restaurant
+
+- See Categories
+- See Restaurants by Category (pagination)
+- See Restaurants (pagination)
+- See Restaurant
+- Search Restaurant
+
+- Create Dish
+- Edit Dish
+- Delete Dish
