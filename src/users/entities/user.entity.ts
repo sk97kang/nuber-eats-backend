@@ -10,6 +10,7 @@ import { CoreEntity } from 'src/common/entities/core.entity';
 import { InternalServerErrorException } from '@nestjs/common';
 import { IsBoolean, IsEmail, IsEnum, IsString } from 'class-validator';
 import { Restaurant } from 'src/restaurants/entities/restaurant.entity';
+import { Order } from 'src/orders/entities/order.entity';
 
 export enum UserRole {
   Client = 'Client',
@@ -24,28 +25,36 @@ registerEnumType(UserRole, { name: 'UserRole' });
 @ObjectType()
 export class User extends CoreEntity {
   @Column({ unique: true })
-  @Field((type) => String)
+  @Field(type => String)
   @IsEmail()
   email: string;
 
   @Column({ select: false })
-  @Field((type) => String)
+  @Field(type => String)
   @IsString()
   password: string;
 
   @Column({ type: 'enum', enum: UserRole })
-  @Field((type) => UserRole)
+  @Field(type => UserRole)
   @IsEnum(UserRole)
   role: UserRole;
 
   @Column({ default: false })
-  @Field((type) => Boolean)
+  @Field(type => Boolean)
   @IsBoolean()
   verified: boolean;
 
-  @OneToMany((type) => Restaurant, (restaurant) => restaurant.owner)
-  @Field((type) => [Restaurant])
+  @OneToMany(type => Restaurant, restaurant => restaurant.owner)
+  @Field(type => [Restaurant])
   restaurants: Restaurant[];
+
+  @OneToMany(type => Order, restaurant => restaurant.customer)
+  @Field(type => [Order])
+  orders: Order[];
+
+  @OneToMany(type => Order, restaurant => restaurant.driver)
+  @Field(type => [Order])
+  rides: Order[];
 
   @BeforeInsert()
   @BeforeUpdate()
