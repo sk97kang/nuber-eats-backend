@@ -26,10 +26,10 @@ describe('UsersModule (e2e)', () => {
   let verificationRepository: Repository<Verification>;
   let jwtToken: string;
 
-  const baseText = () => request(app.getHttpServer()).post(GRAPHQL_ENDPOINT);
-  const publicTest = (query: string) => baseText().send({ query });
+  const baseTest = () => request(app.getHttpServer()).post(GRAPHQL_ENDPOINT);
+  const publicTest = (query: string) => baseTest().send({ query });
   const privateTest = (query: string) =>
-    baseText().set('X-JWT', jwtToken).send({ query });
+    baseTest().set('X-JWT', jwtToken).send({ query });
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -62,7 +62,7 @@ describe('UsersModule (e2e)', () => {
           }
         }`)
         .expect(200)
-        .expect((res) => {
+        .expect(res => {
           const {
             body: {
               data: { createAccount },
@@ -85,7 +85,7 @@ describe('UsersModule (e2e)', () => {
         }
       }`)
         .expect(200)
-        .expect((res) => {
+        .expect(res => {
           const {
             body: {
               data: { createAccount },
@@ -112,7 +112,7 @@ describe('UsersModule (e2e)', () => {
           }
         }`)
         .expect(200)
-        .expect((res) => {
+        .expect(res => {
           const {
             body: {
               data: { login },
@@ -137,7 +137,7 @@ describe('UsersModule (e2e)', () => {
         }
       }`)
         .expect(200)
-        .expect((res) => {
+        .expect(res => {
           const {
             body: {
               data: { login },
@@ -168,7 +168,7 @@ describe('UsersModule (e2e)', () => {
         }
       }`)
         .expect(200)
-        .expect((res) => {
+        .expect(res => {
           const { ok, error, user } = res.body.data.userProfile;
           const { id } = user;
           expect(ok).toBe(true);
@@ -188,7 +188,7 @@ describe('UsersModule (e2e)', () => {
         }
       }`)
         .expect(200)
-        .expect((res) => {
+        .expect(res => {
           const { ok, error, user } = res.body.data.userProfile;
           expect(ok).toBe(false);
           expect(error).toBe('User Not Found');
@@ -205,7 +205,7 @@ describe('UsersModule (e2e)', () => {
         }
       }`)
         .expect(200)
-        .expect((res) => {
+        .expect(res => {
           const { email } = res.body.data.me;
           expect(email).toBe(testUser.email);
         });
@@ -218,7 +218,7 @@ describe('UsersModule (e2e)', () => {
         }
       }`)
         .expect(200)
-        .expect((res) => {
+        .expect(res => {
           const { errors } = res.body;
           const [error] = errors;
           expect(error.message).toBe('Forbidden resource');
@@ -238,7 +238,7 @@ describe('UsersModule (e2e)', () => {
         }
       }`)
         .expect(200)
-        .expect((res) => {
+        .expect(res => {
           const { ok, error } = res.body.data.editProfile;
           expect(ok).toBe(true);
           expect(error).toBe(null);
@@ -252,7 +252,7 @@ describe('UsersModule (e2e)', () => {
         }
       }`)
         .expect(200)
-        .expect((res) => {
+        .expect(res => {
           const { email } = res.body.data.me;
           expect(email).toBe(NEW_EMAIL);
         });
@@ -276,7 +276,7 @@ describe('UsersModule (e2e)', () => {
         }
       }`)
         .expect(200)
-        .expect((res) => {
+        .expect(res => {
           const { ok, error } = res.body.data.verifyEmail;
           expect(ok).toBe(true);
           expect(error).toBe(null);
@@ -293,7 +293,7 @@ describe('UsersModule (e2e)', () => {
         }
       }`)
         .expect(200)
-        .expect((res) => {
+        .expect(res => {
           const { ok, error } = res.body.data.verifyEmail;
           expect(ok).toBe(false);
           expect(error).toBe('Verification not found.');
