@@ -62,7 +62,7 @@ export class OrdersService {
             if (dishOption.extra) {
               dishFinalPrice += dishOption.extra;
             } else {
-              const dishOptionChoice = dishOption.choices.find(
+              const dishOptionChoice = dishOption.choices?.find(
                 optionChoice => optionChoice.name === itemOption.choice,
               );
               if (dishOptionChoice) {
@@ -95,6 +95,7 @@ export class OrdersService {
       });
       return {
         ok: true,
+        orderId: order.id,
       };
     } catch (error) {
       return {
